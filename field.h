@@ -1,6 +1,7 @@
 #ifndef FIELD_H
 #define FIELD_H
 #include "point.h"
+#include "line.h"
 
 class Field
 {
@@ -19,6 +20,14 @@ public:
     float getArea() const;
 
     bool isInside(const Point &P) const;
+
+    int getBouncesEven(Point *last, Line l1, Line l2, Point p1, Vector v);
+    int getBouncesOdd(Point *last, Line l1, Line l2, Point p1, Vector v);
+
+    void invertCheck(Line ls1, Line ls2, Line ls3, Line ls4, int bouncesEven, int bouncesOdd, Point *last);
+    void holeCheck(Point cur, Point s, Vector path, Line ls1, Line ls2, Line ls3, Line ls4, Point oldLast, Point *last);
+
+    void getMiddle(float a, floay b) const { return a + (b - a) / 2; }
 };
 
 #endif

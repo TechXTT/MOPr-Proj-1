@@ -17,7 +17,7 @@ int main()
     while (input != 0)
     {
         system("CLS");
-        cout << "Board Complexity:\n1.Simple\n(1/_):";
+        cout << "Board Complexity:\n1.Simple\n2.Complex\n(1/2):";
         cin >> input;
         switch (input)
         {
@@ -50,6 +50,32 @@ int main()
 
             input = 0;
             break;
+        case 2:
+            cout << "Enter the points of the field(x1, y1, x2, y2, x3, y3, x4, y4): ";
+            float x1, y1, x2, y2, x3, y3, x4, y4;
+            cin >> x1 >> y1 >> x2 >> y2 >> x3 >> y3 >> x4 >> y4;
+            p1.setPoint(x1, y1);
+            p2.setPoint(x2, y2);
+            p3.setPoint(x3, y3);
+            p4.setPoint(x4, y4);
+            try
+            {
+                f.setAll(p1, p2, p3, p4, false);
+            }
+            catch (const std::exception &e)
+            {
+                std::cerr << e.what() << '\n';
+                getchar();
+                getchar();
+                break;
+            }
+            l1.setPoints(p1, p2);
+            l2.setPoints(p2, p3);
+            l3.setPoints(p3, p4);
+            l4.setPoints(p4, p1);
+
+            input = 0;
+            break;
         default:
             cout << "Invalid input!\n";
             getchar();
@@ -61,7 +87,8 @@ int main()
     Point ps1, ps2, ps3, ps4;
     Line ls1, ls2, ls3, ls4;
     Vector v1, v2;
-    Point s, cur, end;
+    Point s, cur, end, last, oldLast;
+    float diameter = 0;
     while (input != 0)
     {
         system("CLS");
@@ -76,6 +103,7 @@ int main()
                 cout << "Enter the position of the ball and diameter: ";
                 float x, y, d;
                 cin >> x >> y >> d;
+                diameter = d;
                 if (d != 0)
                 {
                     Line b1(f, l4, l1, p1), b2(f, l1, l2, p2), b3(f, l2, l3, p3), b4(f, l3, l4, p4);
@@ -118,6 +146,8 @@ int main()
         case 2:
             cout << "Enter the target point and the power(1 - 10): ";
             float x, y, p;
+            Vector path;
+            int bouncesEven = 0, bouncesOdd = 0;
             cin >> x >> y >> p;
             if (p < 1 || p > 10)
             {
@@ -127,4 +157,30 @@ int main()
                 continue;
             }
             end.setPoint(x, y);
+            path.setPoints(cur, end);
+            last.setPoint(cur.x + path.getX() * p, cur.y + path.getY() * p);
+            oldLast = last;
+            bouncesEven = f.getBouncesEven(&last, ls2, ls4, p1, v1);
+            bouncesOdd = f.getBouncesOdd(&last, ls1, ls3, p1, v2);
+            f.invertCheck(ls1, ls2, ls3, ls4, bouncesEven, bouncesOdd, &last);
+            f.holeCheck(cur, s, path, ls1, ls2, ls3, ls4, oldLast, *last);
+            cur = last;
+            break;
+
+        case 3:
+            cout << "Field points:\n(" << p1.x << "," << p1.y << ")\n(" << p2.x << "," << p2.y << ")\n(" << p3.x << "," << p3.y << ")\n(" << p4.x << "," << p4.y << ")\n";
+            cout << "Ball position:\n(" << cur.x << "," << cur.y << ")\n";
+            cout << "Ball diameter:\n"
+                 << diameter << "\n";
+            getchar();
+            getchar();
+            break;
+        case 0:
+            break;
+
+        default:
+            cout << "Invalid input!\n";
+            getchar();
+            getchar();
+            break;
         }
